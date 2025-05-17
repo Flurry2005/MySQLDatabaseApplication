@@ -1,6 +1,7 @@
 package se.liam.sqldbapplication;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Application {
@@ -9,7 +10,6 @@ public class Application {
 
         initializeApplication(db);
     }
-//
     public void initializeApplication(DBConnection db){
 
         Scanner scanner = new Scanner(System.in);
@@ -35,9 +35,6 @@ public class Application {
                 }
                 case "2" : {
 
-                    System.out.print("Enter customer id: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
                     System.out.println();
                     System.out.print("Enter customer address: ");
                     String address = scanner.nextLine();
@@ -57,7 +54,7 @@ public class Application {
                     System.out.print("Enter customer postal code: ");
                     String postal_code = scanner.nextLine();
                     System.out.println();
-                    db.createCustomer(new Customer(id, address, birth_date, city, name, last_name, postal_code));
+                    db.createCustomer(new Customer(address, birth_date, city, name, last_name, postal_code));
                     break;
                 }
                 case "3" : {
@@ -74,7 +71,47 @@ public class Application {
                     }
                     break;
                 }
-                case "4" : break;
+                case "4" : {
+
+                    System.out.print("Enter order date: ");
+                    String orderDate = scanner.nextLine();
+                    System.out.println();
+                    System.out.print("Enter customer id: ");
+                    String customerId = scanner.nextLine();
+                    System.out.println();
+                    System.out.print("Enter employee id: ");
+                    String employeeId = scanner.nextLine();
+                    System.out.println();
+                    Order_head orderHead = new Order_head(orderDate, Long.parseLong(customerId), Long.parseLong(employeeId));
+
+                    System.out.print("How many items are contained in the order: ");
+                    int orderItemQuantity = scanner.nextInt();
+                    System.out.println();
+                    scanner.nextLine();
+
+                    List<Order_line> orderLineList = new ArrayList<>();
+
+                    for(int i = 0; i<orderItemQuantity; i++){
+                        System.out.print("Furniture id: ");
+                        long furnitureId = scanner.nextLong();
+                        scanner.nextLine();
+
+                        //I should not have to put orderid here
+                        System.out.print("Order id: ");
+                        long orderId = scanner.nextLong();
+                        scanner.nextLine();
+
+                        System.out.print("Quantity: ");
+                        int quantity = scanner.nextInt();
+                        scanner.nextLine();
+                        System.out.println();
+                        orderLineList.add(new Order_line(furnitureId, orderId, quantity));
+
+                    }
+                    System.out.println();
+                    db.createOrder(orderHead, orderLineList);
+
+                    break;}
                 case "5" : break;
             }
         }

@@ -39,6 +39,26 @@ public class DBConnection {
                 "VALUES("+
                 String.format("'%d', '%s', '%d', '%d'",order.id(), order.orderDate(), order.customerId(), order.employeeId())+
                 ")";
+
+        try (Statement statement = con.createStatement()){
+            statement.executeUpdate(sqlQuery);
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        for(Order_line o : orderLines){
+            String sqlQuery_orderLines = "INSERT INTO order_line(id, furniture_id, order_id, quantity)"+
+                    "VALUES("+
+                    String.format("'%d', '%d', '%d', '%d'",o.id(), o.furnitureId(), o.orderId(), o.quantity())+
+                    ")";
+            try (Statement statement = con.createStatement()){
+                statement.executeUpdate(sqlQuery_orderLines);
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
     }
 
 
