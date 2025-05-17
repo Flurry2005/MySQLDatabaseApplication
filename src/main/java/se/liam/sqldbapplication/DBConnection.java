@@ -1,0 +1,113 @@
+package se.liam.sqldbapplication;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.WeakHashMap;
+
+public class DBConnection {
+    private final String url, user, password;
+    private Connection con;
+
+    public DBConnection(String address, int port, String dbName,String user, String password){
+
+        url = String.format("%s%s:%d/%s","jdbc:mysql://", address, port,  dbName);
+        this.user = user;
+        this.password = password;
+
+        this.con = EstablishConnection();
+
+    }
+
+    private Connection EstablishConnection (){
+
+        try {
+            Connection con = DriverManager.getConnection(url, user, password);
+            //Check if connection has been established
+            if(con != null){
+                System.out.println("Connection established to SQL Database.");
+            }
+            return con;
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void createOrder(Order_head order, List<Order_line> orderLines){
+        String sqlQuery = "INSERT INTO order_head(id, order_date, customer_id, employee_id)"+
+                "VALUES("+
+                String.format("'%d', '%s', '%d', '%d'",order.id(), order.orderDate(), order.customerId(), order.employeeId())+
+                ")";
+    }
+
+
+    public List<Order_head> listOrdersForEmployee(int employeeId){
+        List<Order_head> orders = new ArrayList<>();
+
+        String sqlQuery = "SELECT * FROM order_head WHERE employee_id = "+employeeId;
+
+        try(Statement statement = con.createStatement();
+        ResultSet resultSet = statement.executeQuery(sqlQuery)){
+            if(!resultSet.isBeforeFirst()){
+                System.out.println("No orders found for employee with id: "+employeeId);
+            }
+
+            while(resultSet.next()){
+                Order_head orderHead = new Order_head(
+                        resultSet.getLong("id"),
+                        resultSet.getString("order_date"),
+                        resultSet.getLong("customer_id"),
+                        resultSet.getLong("employee_id")
+                );
+
+                orders.add(orderHead);
+            }
+            return orders;
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public void createCustomer(Customer customer){
+        String sqlQuery = "INSERT INTO customer(id, address, birth_date, city, first_name, last_name, postal_code)" +
+                "VALUES("+
+                String.format("'%d', '%s', '%s', '%s', '%s', '%s', '%s'",customer.id(), customer.address(), customer.birthDate(), customer.city(), customer.firstName(), customer.lastName(), customer.postalCode())+
+                ")";
+        try (Statement statement = con.createStatement()){
+            statement.executeUpdate(sqlQuery);
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+    public List<Customer> listAllCustomers(){
+        List<Customer> customers = new ArrayList<>();
+        String sqlQuery = "SELECT * FROM customer";
+
+        try (Statement statement = con.createStatement();
+             ResultSet resultSet = statement.executeQuery(sqlQuery)){
+
+            //While more rows
+            while(resultSet.next()){
+                Customer customer = new Customer(resultSet.getLong("id"),
+                        resultSet.getString("address"),
+                        resultSet.getString("birth_date"),
+                        resultSet.getString("city"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("postal_code")
+                );
+                customers.add(customer);
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return customers;
+    }
+
+}
