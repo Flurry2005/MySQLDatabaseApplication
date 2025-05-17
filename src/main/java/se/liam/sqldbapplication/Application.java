@@ -9,7 +9,7 @@ public class Application {
 
         initializeApplication(db);
     }
-
+//
     public void initializeApplication(DBConnection db){
 
         Scanner scanner = new Scanner(System.in);
