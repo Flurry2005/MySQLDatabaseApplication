@@ -32,6 +32,7 @@ public class Application {
                     for(Customer c : customers){
                         System.out.println(c.firstName());
                     }
+                    System.out.println();
                     break;
                 }
                 case "2" : {
@@ -62,14 +63,13 @@ public class Application {
 
                     System.out.print("Enter employee id: ");
                     int id = scanner.nextInt();
-
+                    scanner.nextLine();
+                    System.out.println();
                     ArrayList<Order_head> h = (ArrayList<Order_head>) db.listOrdersForEmployee(id);
                     for(Order_head h1 : h){
-                        System.out.println(h1.id());
-                        System.out.println(h1.orderDate());
-                        System.out.println(h1.customerId());
-                        System.out.println(h1.employeeId());
+                        System.out.println("| Order id: "+h1.id()+" | Order date: "+h1.orderDate()+" | Customer id: "+h1.customerId()+" | Employee id: "+ h1.employeeId()+" |");
                     }
+                    System.out.println();
                     break;
                 }
                 case "4" : {
@@ -117,7 +117,7 @@ public class Application {
                     List<OrderDetail> orderDetails =  db.listOrdersWithCustomerNameForEmployee(employeeId);
                     for(OrderDetail o : orderDetails){
 
-                        System.out.println("Order id: "+o.id()+" Order date: "+o.orderDate()+" Customer id: "+ o.customerId()+" Customer name: "+o.customerName());
+                        System.out.println("| Order id: "+o.id()+" | Order date: "+o.orderDate()+" | Customer id: "+ o.customerId()+" | Customer name: "+o.customerName()+" |");
                     }
                     System.out.println();
 

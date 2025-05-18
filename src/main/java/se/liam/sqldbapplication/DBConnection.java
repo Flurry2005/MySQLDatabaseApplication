@@ -61,6 +61,12 @@ public class DBConnection {
         try (Statement statement = con.createStatement();
              ResultSet resultSet = statement.executeQuery(sqlQuery)){
 
+            //If no employee found with id, return.
+            if(!resultSet.isBeforeFirst()){
+                System.out.println("No employee found with id: "+employeeId+" or no order where found.");
+                return orderDetails;
+            }
+
             //While more rows
             while(resultSet.next()){
 
@@ -117,6 +123,12 @@ public class DBConnection {
         try (Statement statement = con.createStatement();
              ResultSet resultSet = statement.executeQuery(sqlQuery)){
 
+            //If no employee found with id, return.
+            if(!resultSet.isBeforeFirst()){
+                System.out.println("No employee found with id: "+employeeId+" or no order where found.");
+                return orderDetails;
+            }
+
             //While more rows
             while(resultSet.next()){
                 OrderDetail orderDetail = new OrderDetail(resultSet.getLong("order_id"),
@@ -142,6 +154,7 @@ public class DBConnection {
                 ")";
         ResultSet orderHeadResultSet = null;
         try (PreparedStatement statement = con.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)){
+            con.setAutoCommit(false);
             statement.executeUpdate();
             orderHeadResultSet = statement.getGeneratedKeys();
 
@@ -158,13 +171,27 @@ public class DBConnection {
                             ")";
                     statement1.executeUpdate(sqlQuery_orderLines);
 
-                }catch (SQLException e){
-                    e.printStackTrace();
                 }
             }
 
+            con.commit();
+
         }catch (SQLException e){
+            try{
+                System.out.println("Failed to create order, no changes were made!");
+                con.rollback();;
+            }catch (SQLException rbExeption){
+                System.out.println("Failed to rollback changes! WARNING!");
+                //rbExeption.printStackTrace();
+            }
             e.printStackTrace();
+        }finally {
+            try {
+                con.setAutoCommit(true);
+            }catch (SQLException acExeption){
+                System.out.println("Could not restore autocommit, no changes will be done to the database, please restart!");
+                acExeption.printStackTrace();
+            }
         }
 
     }
@@ -208,6 +235,7 @@ public class DBConnection {
             statement.executeUpdate(sqlQuery);
 
         }catch (SQLException e){
+            System.out.println("Failed to create new customer!");
             e.printStackTrace();
         }
     }
@@ -218,6 +246,12 @@ public class DBConnection {
 
         try (Statement statement = con.createStatement();
              ResultSet resultSet = statement.executeQuery(sqlQuery)){
+
+            //If no employee found with id, return.
+            if(!resultSet.isBeforeFirst()){
+                System.out.println("No customers were found!");
+                return customers;
+            }
 
             //While more rows
             while(resultSet.next()){
