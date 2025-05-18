@@ -34,6 +34,70 @@ public class DBConnection {
         return null;
     }
 
+    public List<OrderDetail> listOrdersWithDetailsForEmployee(int employeeId){
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        List<Long> orderIds = new ArrayList<>();
+        String sqlQuery = "SELECT " +
+                "oh.id AS order_id, " +
+                "oh.order_date, " +
+                "c.id AS customer_id," +
+                "c.first_name AS customer_first_name, " +
+                "c.last_name AS customer_last_name, " +
+                "ol.id AS order_line_id, "+
+                "ol.quantity, "+
+                "f.id AS furniture_id, "+
+                "f.name AS furniture_name "+
+                "FROM " +
+                "order_head oh " +
+                "JOIN " +
+                "customer c ON oh.customer_id = c.id " +
+                "JOIN "+
+                "order_line ol ON oh.id = ol.order_id "+
+                "JOIN "+
+                "furniture f ON ol.furniture_id = f.id "+
+                "WHERE " +
+                "oh.employee_id = "+employeeId;
+
+        try (Statement statement = con.createStatement();
+             ResultSet resultSet = statement.executeQuery(sqlQuery)){
+
+            //While more rows
+            while(resultSet.next()){
+
+                if(!orderIds.contains(resultSet.getLong("order_id"))){
+                    orderIds.add(resultSet.getLong("order_id"));
+
+                    List<OrderLineDetail> lines = new ArrayList<>();
+                    lines.add(new OrderLineDetail(
+                                    resultSet.getLong("order_line_id"),resultSet.getInt("quantity"),
+                                    resultSet.getLong("furniture_id"), resultSet.getString("furniture_name")));
+                    OrderDetail orderDetail = new OrderDetail(resultSet.getLong("order_id"),
+                            resultSet.getString("order_date"),
+                            resultSet.getLong("customer_id"),
+                            employeeId,
+                            resultSet.getString("customer_first_name"),
+                            lines
+                    );
+                    orderDetails.add(orderDetail);
+                }else{
+                    for(OrderDetail o : orderDetails){
+                        if(o.id() == resultSet.getLong("order_id")){
+                            o.orderLines().add(new OrderLineDetail(
+                                    resultSet.getLong("order_line_id"),resultSet.getInt("quantity"),
+                                    resultSet.getLong("furniture_id"), resultSet.getString("furniture_name")));
+                        }
+                    }
+                }
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return orderDetails;
+
+
+    }
+
     public List<OrderDetail>
     listOrdersWithCustomerNameForEmployee(int employeeId){
         List<OrderDetail> orderDetails = new ArrayList<>();

@@ -20,7 +20,8 @@ public class Application {
                             "2. Create Customer\n"+
                             "3. List orders for employee\n"+
                             "4. Create order\n"+
-                            "5. List orders with customer name for specified employee\n");
+                            "5. List orders with customer name for specified employee\n"+
+                            "6. List order with details for employee\n");
             System.out.print("Option: ");
             String userInput = scanner.nextLine();
             System.out.println();
@@ -117,6 +118,25 @@ public class Application {
                     for(OrderDetail o : orderDetails){
 
                         System.out.println("Order id: "+o.id()+" Order date: "+o.orderDate()+" Customer id: "+ o.customerId()+" Customer name: "+o.customerName());
+                    }
+                    System.out.println();
+
+                    break;
+                }
+                case "6": {
+
+                    System.out.print("Please enter employee id: ");
+                    int employeeId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    List<OrderDetail> orderDetails = db.listOrdersWithDetailsForEmployee(employeeId);
+
+                    for(OrderDetail o : orderDetails){
+                        System.out.println("| Order id: "+o.id()+"| Order date: "+o.orderDate()+" | Customer Id: "+o.customerId()+" | Employee id: "+o.employeeId()
+                        +"| Customer name: "+o.customerName()+" |");
+                        for(OrderLineDetail od : o.orderLines()){
+                            System.out.println("    | Order line id: "+od.id()+" | Quantity: "+od.quantity()+" | Furniture id: "+od.furnitureId()+" | Furniture name: "+od.furnitureName()+" |");
+                        }
                     }
                     System.out.println();
 
