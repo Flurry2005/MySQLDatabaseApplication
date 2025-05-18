@@ -6,7 +6,7 @@ public record Order_line(
         long orderId,
         int quantity
 ) {
-    public Order_line(long furnitureId, long orderId, int quantity) {
-        this(0L, furnitureId, orderId, quantity);
+    public Order_line(long furnitureId, int quantity) {
+        this(0L, furnitureId,0L, quantity);
     }
 }

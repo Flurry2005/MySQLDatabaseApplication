@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record OrderDetail(
         long id,
-        LocalDate orderDate,
+        String orderDate,
         long customerId,
         long employeeId,
         String customerName

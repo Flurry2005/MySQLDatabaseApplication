@@ -34,31 +34,75 @@ public class DBConnection {
         return null;
     }
 
+    public List<OrderDetail>
+    listOrdersWithCustomerNameForEmployee(int employeeId){
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        String sqlQuery = "SELECT " +
+                "o.id AS order_id, " +
+                "o.order_date, " +
+                "c.id AS customer_id," +
+                "c.first_name AS customer_first_name, " +
+                "c.last_name AS customer_last_name " +
+                "FROM " +
+                "order_head o " +
+                "JOIN " +
+                "customer c ON o.customer_id = c.id " +
+                "WHERE " +
+                "o.employee_id = "+employeeId;
+
+        try (Statement statement = con.createStatement();
+             ResultSet resultSet = statement.executeQuery(sqlQuery)){
+
+            //While more rows
+            while(resultSet.next()){
+                OrderDetail orderDetail = new OrderDetail(resultSet.getLong("order_id"),
+                        resultSet.getString("order_date"),
+                        resultSet.getLong("customer_id"),
+                        employeeId,
+                        resultSet.getString("customer_first_name")
+                );
+                orderDetails.add(orderDetail);
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return orderDetails;
+
+    }
+
     public void createOrder(Order_head order, List<Order_line> orderLines){
         String sqlQuery = "INSERT INTO order_head(id, order_date, customer_id, employee_id)"+
                 "VALUES("+
                 String.format("'%d', '%s', '%d', '%d'",order.id(), order.orderDate(), order.customerId(), order.employeeId())+
                 ")";
+        ResultSet orderHeadResultSet = null;
+        try (PreparedStatement statement = con.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)){
+            statement.executeUpdate();
+            orderHeadResultSet = statement.getGeneratedKeys();
 
-        try (Statement statement = con.createStatement()){
-            statement.executeUpdate(sqlQuery);
+            long orderId = -1;
+            if(orderHeadResultSet.next()){
+                orderId = orderHeadResultSet.getLong(1);
+            }
+            assert orderId!=-1;
+            for(Order_line o : orderLines){
+                try (Statement statement1 = con.createStatement()){
+                    String sqlQuery_orderLines = "INSERT INTO order_line(id, furniture_id, order_id, quantity)"+
+                            "VALUES("+
+                            String.format("'%d', '%d', '%d', '%d'",o.id(), o.furnitureId(), orderId, o.quantity())+
+                            ")";
+                    statement1.executeUpdate(sqlQuery_orderLines);
+
+                }catch (SQLException e){
+                    e.printStackTrace();
+                }
+            }
 
         }catch (SQLException e){
             e.printStackTrace();
         }
 
-        for(Order_line o : orderLines){
-            String sqlQuery_orderLines = "INSERT INTO order_line(id, furniture_id, order_id, quantity)"+
-                    "VALUES("+
-                    String.format("'%d', '%d', '%d', '%d'",o.id(), o.furnitureId(), o.orderId(), o.quantity())+
-                    ")";
-            try (Statement statement = con.createStatement()){
-                statement.executeUpdate(sqlQuery_orderLines);
-
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-        }
     }
 
 

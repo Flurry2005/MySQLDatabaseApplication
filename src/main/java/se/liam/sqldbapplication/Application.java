@@ -96,23 +96,32 @@ public class Application {
                         long furnitureId = scanner.nextLong();
                         scanner.nextLine();
 
-                        //I should not have to put orderid here
-                        System.out.print("Order id: ");
-                        long orderId = scanner.nextLong();
-                        scanner.nextLine();
-
                         System.out.print("Quantity: ");
                         int quantity = scanner.nextInt();
                         scanner.nextLine();
                         System.out.println();
-                        orderLineList.add(new Order_line(furnitureId, orderId, quantity));
+                        orderLineList.add(new Order_line(furnitureId, quantity));
 
                     }
                     System.out.println();
                     db.createOrder(orderHead, orderLineList);
 
                     break;}
-                case "5" : break;
+                case "5" : {
+
+                    System.out.print("Enter employee id: ");
+                    int employeeId = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println();
+                    List<OrderDetail> orderDetails =  db.listOrdersWithCustomerNameForEmployee(employeeId);
+                    for(OrderDetail o : orderDetails){
+
+                        System.out.println("Order id: "+o.id()+" Order date: "+o.orderDate()+" Customer id: "+ o.customerId()+" Customer name: "+o.customerName());
+                    }
+                    System.out.println();
+
+                    break;
+                }
             }
         }
     }
