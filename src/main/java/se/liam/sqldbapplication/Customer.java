@@ -1,7 +1,5 @@
 package se.liam.sqldbapplication;
 
-import java.time.LocalDate;
-
 public record Customer(
         long id,
         String address,

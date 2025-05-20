@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         HashMap<String, String> properties = new HashMap<>();
-
+        Scanner scanner = new Scanner(System.in);
         try {
             // Get the path to the 'resources' directory inside target/classes
             URL resourceUrl = Main.class.getClassLoader().getResource(".");
@@ -36,14 +36,34 @@ public class Main {
                 // Create file and write default properties
                 if (file.createNewFile()) {
                     try (FileWriter writer = new FileWriter(file)) {
-                        properties.put("address", "");
-                        properties.put("port", "1234");
-                        properties.put("dbName", "");
-                        properties.put("user", "");
-                        properties.put("password", "");
+                        System.out.print("Please enter database address: ");
+                        String address = scanner.nextLine();
+
+                        properties.put("address", address);
+
+                        System.out.print("Please enter database port: ");
+                        String port = scanner.nextLine();
+
+                        properties.put("port", port);
+
+                        System.out.print("Please enter database name ex. inventory: ");
+                        String dbName = scanner.nextLine();
+
+                        properties.put("dbName", dbName);
+
+                        System.out.print("Please enter database username: ");
+                        String username = scanner.nextLine();
+
+                        properties.put("user", username);
+
+                        System.out.print("Please enter database password: ");
+                        String password = scanner.nextLine();
+
+                        properties.put("password", password);
 
                         gson.toJson(properties, writer);
                         System.out.println("Properties file created at: " + file.getAbsolutePath());
+
                     }
                 }
             } else {
@@ -68,6 +88,6 @@ public class Main {
                 properties.get("password")
         );
 
-        Application application = new Application(db);
+        Application application = new Application(db,scanner);
     }
 }

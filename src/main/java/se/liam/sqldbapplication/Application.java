@@ -6,13 +6,12 @@ import java.util.Scanner;
 
 public class Application {
 
-    public Application(DBConnection db){
+    public Application(DBConnection db, Scanner scanner){
 
-        initializeApplication(db);
+        initializeApplication(db, scanner);
     }
-    public void initializeApplication(DBConnection db){
+    public void initializeApplication(DBConnection db, Scanner scanner){
 
-        Scanner scanner = new Scanner(System.in);
 
         while(true){
             System.out.println(

@@ -3,11 +3,10 @@ package se.liam.sqldbapplication;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.WeakHashMap;
 
 public class DBConnection {
     private final String url, user, password;
-    private Connection con;
+    private final Connection con;
 
     public DBConnection(String address, int port, String dbName,String user, String password){
 
