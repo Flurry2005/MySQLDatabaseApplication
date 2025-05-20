@@ -21,7 +21,8 @@ public class Application {
                             "3. List orders for employee\n"+
                             "4. Create order\n"+
                             "5. List orders with customer name for specified employee\n"+
-                            "6. List order with details for employee\n");
+                            "6. List order with details for employee\n"+
+                            "7. Update customer address\n" );
             System.out.print("Option: ");
             String userInput = scanner.nextLine();
             System.out.println();
@@ -141,6 +142,19 @@ public class Application {
                     System.out.println();
 
                     break;
+                }
+                case "7":{
+
+                    System.out.print("Please enter customer id: ");
+                    long customerId = scanner.nextLong();
+                    scanner.nextLine();
+                    System.out.println();
+                    System.out.print("Please enter new address: ");
+                    String newAddress = scanner.nextLine();
+                    System.out.println();
+
+                    db.updateCustomerAddress(newAddress, customerId);
+                    System.out.println();
                 }
             }
         }

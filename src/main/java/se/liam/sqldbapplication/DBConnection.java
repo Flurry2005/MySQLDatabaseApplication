@@ -148,9 +148,9 @@ public class DBConnection {
     }
 
     public void createOrder(Order_head order, List<Order_line> orderLines){
-        String sqlQuery = "INSERT INTO order_head(id, order_date, customer_id, employee_id)"+
+        String sqlQuery = "INSERT INTO order_head(order_date, customer_id, employee_id)"+
                 "VALUES("+
-                String.format("'%d', '%s', '%d', '%d'",order.id(), order.orderDate(), order.customerId(), order.employeeId())+
+                String.format("'%s', '%d', '%d'", order.orderDate(), order.customerId(), order.employeeId())+
                 ")";
         ResultSet orderHeadResultSet = null;
         try (PreparedStatement statement = con.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS)){
@@ -165,9 +165,9 @@ public class DBConnection {
             assert orderId!=-1;
             for(Order_line o : orderLines){
                 try (Statement statement1 = con.createStatement()){
-                    String sqlQuery_orderLines = "INSERT INTO order_line(id, furniture_id, order_id, quantity)"+
+                    String sqlQuery_orderLines = "INSERT INTO order_line(furniture_id, order_id, quantity)"+
                             "VALUES("+
-                            String.format("'%d', '%d', '%d', '%d'",o.id(), o.furnitureId(), orderId, o.quantity())+
+                            String.format("'%d', '%d', '%d'", o.furnitureId(), orderId, o.quantity())+
                             ")";
                     statement1.executeUpdate(sqlQuery_orderLines);
 
@@ -225,11 +225,23 @@ public class DBConnection {
         return null;
     }
 
+    public void updateCustomerAddress(String address, long customerID){
+        String sqlQuery = "UPDATE customer \n"+
+                "SET address = '"+address+"' \n"+
+                "WHERE id = "+customerID;
+
+        try (Statement statement = con.createStatement()){
+            statement.executeUpdate(sqlQuery);
+        }catch(SQLException e){
+            System.out.println("Could not update customer's address!");
+            e.printStackTrace();
+        }
+    }
 
     public void createCustomer(Customer customer){
-        String sqlQuery = "INSERT INTO customer(id, address, birth_date, city, first_name, last_name, postal_code)" +
+        String sqlQuery = "INSERT INTO customer(address, birth_date, city, first_name, last_name, postal_code)" +
                 "VALUES("+
-                String.format("'%d', '%s', '%s', '%s', '%s', '%s', '%s'",customer.id(), customer.address(), customer.birthDate(), customer.city(), customer.firstName(), customer.lastName(), customer.postalCode())+
+                String.format("'%s', '%s', '%s', '%s', '%s', '%s'", customer.address(), customer.birthDate(), customer.city(), customer.firstName(), customer.lastName(), customer.postalCode())+
                 ")";
         try (Statement statement = con.createStatement()){
             statement.executeUpdate(sqlQuery);
