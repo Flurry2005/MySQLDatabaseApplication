@@ -1,7 +1,7 @@
 
 <div align="center">
-  <a><img src="" align="center" height="100" width="100" ></a>
-  <h3>Brogress - Fitness tracker</h3>
+  <a></a>
+  <h3>MySql Application</h3>
 </div>
 
 # MySql Application
